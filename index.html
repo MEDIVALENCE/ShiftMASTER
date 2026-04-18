@@ -1,0 +1,2039 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+    <title>ShiftMASTER © V175C</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+    :root {
+        --blue: #1f6fe5;
+        --blue-dark: #0b246c;
+        --green: #33bb59;
+        --green-dark: #17964a;
+        --red: #ff4a43;
+        --orange: #f5a623;
+        --bg: #eef2f8;
+        --line: #d8dfeb;
+        --text: #26324b;
+        --muted: #6d7891;
+        --white: #fff;
+        --shadow: 0 12px 30px rgba(24, 39, 75, .12);
+    }
+
+    * {
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+        font-family: 'Inter', sans-serif;
+        font-weight: 400;
+    }
+
+    body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-weight: 400;
+    }
+
+    .app {
+        width: 100%;
+        max-width: 480px;
+        min-height: 100vh;
+        margin: 0 auto;
+        background: var(--bg);
+        position: relative;
+        overflow-x: hidden;
+        border-left: 1px solid rgba(216, 223, 235, .9);
+        border-right: 1px solid rgba(216, 223, 235, .9);
+        box-shadow: 0 0 0 1px rgba(255, 255, 255, .35) inset;
+    }
+
+    .app-inner-frame {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        max-width: 480px;
+        margin: 0 auto;
+        left: 50%;
+        transform: translateX(-50%);
+        border-left: 1px solid rgba(216, 223, 235, .55);
+        border-right: 1px solid rgba(216, 223, 235, .55);
+    }
+
+    .header {
+        background: linear-gradient(180deg, #071f68 0%, #0d2268 60%, #112a78 100%);
+        color: #fff;
+        text-align: center;
+        padding: 16px max(14px, env(safe-area-inset-right)) 14px max(14px, env(safe-area-inset-left));
+    }
+
+    .brand {
+        font-size: 2.08rem;
+        font-weight: 700;
+        line-height: 1;
+        margin-bottom: 8px;
+        letter-spacing: .1px;
+    }
+
+    .brand .shift { color: var(--red); }
+    .brand .master { color: #63a4ff; }
+    .brand .copyright {
+        color: #ffffff;
+        font-size: 1rem;
+        vertical-align: top;
+        margin-left: 4px;
+    }
+
+    .header-net-box {
+        border: 1.5px solid rgba(255,255,255,.22);
+        border-radius: 20px;
+        padding: 10px 12px 8px;
+        background: rgba(255,255,255,.06);
+        backdrop-filter: blur(6px);
+        max-width: 330px;
+        margin: 0 auto 8px;
+    }
+
+    .net {
+        font-size: 1.84rem;
+        font-weight: 600;
+        color: #79e06d;
+        line-height: 1.02;
+        margin-bottom: 2px;
+    }
+
+    .net-sub {
+        font-size: .71rem;
+        font-weight: 600;
+        color: #dbe8ff;
+        letter-spacing: .08px;
+    }
+
+    .subhead {
+        font-size: .68rem;
+        font-weight: 600;
+        opacity: .88;
+        letter-spacing: .22px;
+    }
+
+    .body-content {
+        padding: 10px max(12px, env(safe-area-inset-right)) calc(14px + env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+    }
+
+    .segmented,
+    .calendar-wrap,
+    .week-bar,
+    .stat-card,
+    .pay-card,
+    .cfg-card,
+    .bottom-nav {
+        border: 1.5px solid #dce3ef;
+    }
+
+    .segmented {
+        background: #fff;
+        border-radius: 22px;
+        padding: 7px;
+        display: flex;
+        gap: 4px;
+        box-shadow: var(--shadow);
+        margin-top: -4px;
+        margin-bottom: 10px;
+    }
+
+    .seg-btn {
+        flex: 1;
+        border: none;
+        background: transparent;
+        border-radius: 14px;
+        padding: 10px 8px;
+        font-size: .74rem;
+        font-weight: 700;
+        color: #7d869a;
+        cursor: pointer;
+        position: relative;
+    }
+
+    .seg-btn.active {
+        color: var(--blue);
+    }
+
+    .seg-btn.active::after {
+        content: "";
+        position: absolute;
+        left: 12px;
+        right: 12px;
+        bottom: 0;
+        height: 3px;
+        background: var(--red);
+        border-radius: 999px;
+    }
+
+    .content { display: none; }
+    .content.active { display: block; }
+
+    .selectors {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        margin: 6px 0 10px;
+    }
+
+    select, input {
+        border: 1.5px solid #dce3ef;
+        background: #fff;
+        border-radius: 14px;
+        padding: 11px 13px;
+        font-weight: 500;
+        font-size: .84rem;
+        color: #1e2c4d;
+        box-shadow: 0 4px 10px rgba(31, 52, 120, .05);
+        width: 100%;
+    }
+
+    .calendar-wrap {
+        background: #f6f8fc;
+        border-radius: 18px;
+        padding: 0;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .weekdays, .days {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+    }
+
+    .weekdays {
+        background: #f1f4fa;
+        border-bottom: 1.5px solid #dce3ef;
+    }
+
+    .weekdays div {
+        text-align: center;
+        padding: 9px 4px;
+        font-size: .67rem;
+        font-weight: 700;
+        color: #6f7c97;
+        border-right: 1px solid #dce3ef;
+    }
+
+    .weekdays div:last-child { border-right: none; }
+
+    .day {
+        min-height: 72px;
+        border-right: 1px solid #dce3ef;
+        border-bottom: 1px solid #dce3ef;
+        padding: 4px;
+        position: relative;
+        background: #fff;
+        cursor: pointer;
+    }
+
+    .day.blank {
+        background: #fafbfd;
+        cursor: default;
+    }
+
+    .day.selected {
+        background: #dff7e2;
+        box-shadow: inset 0 0 0 2px rgba(88, 204, 95, .28);
+    }
+
+    .day.holiday {
+        background: linear-gradient(180deg, #fff8f7 0%, #fff2ef 100%);
+    }
+
+    .day.holiday.selected {
+        background: linear-gradient(180deg, #ffeae6 0%, #ffe1db 100%);
+        box-shadow: inset 0 0 0 2px rgba(255, 74, 67, .18);
+    }
+
+    .day-num {
+        position: absolute;
+        top: 4px;
+        right: 6px;
+        font-size: .73rem;
+        font-weight: 700;
+        color: #23345b;
+    }
+
+    .day-num.weekend { color: var(--red); }
+    .day-num.holiday-num { color: var(--red); }
+
+    .holiday-badge {
+        position: absolute;
+        top: 4px;
+        left: 5px;
+        font-size: .47rem;
+        font-weight: 700;
+        color: #b83831;
+        background: #ffe5e2;
+        border: 1px solid #ffd0cb;
+        border-radius: 999px;
+        padding: 2px 5px;
+        line-height: 1;
+    }
+
+    .holiday-name {
+        margin-top: 18px;
+        padding: 4px 4px 0;
+        text-align: center;
+        font-size: .50rem;
+        font-weight: 600;
+        line-height: 1.08;
+        color: #b33b33;
+    }
+
+    .event-pill {
+        margin-top: 18px;
+        border-radius: 8px;
+        padding: 5px 4px 5px;
+        text-align: center;
+        color: #fff;
+        font-size: .51rem;
+        font-weight: 700;
+        line-height: 1.08;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, .08);
+    }
+
+    .pill-green { background: linear-gradient(180deg, #58cc5f, var(--green-dark)); }
+    .pill-red { background: linear-gradient(180deg, #ff655e, var(--red)); }
+    .pill-gray { background: #cfd4df; color: #52607c; }
+
+    .event-meta {
+        margin-top: 3px;
+        text-align: center;
+        font-size: .49rem;
+        font-weight: 700;
+        line-height: 1.05;
+    }
+
+    .meta-35 { color: var(--red); }
+
+    .week-inline-total {
+        grid-column: 1 / -1;
+        background: linear-gradient(180deg, #f7f9fd 0%, #edf3fc 100%);
+        border-bottom: 1px solid #dce3ef;
+        padding: 8px 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: .66rem;
+        font-weight: 700;
+        color: #55627e;
+    }
+
+    .week-inline-total .label {
+        letter-spacing: .2px;
+    }
+
+    .week-inline-total .value {
+        color: var(--blue);
+        font-size: .76rem;
+        font-weight: 700;
+    }
+
+    .week-bar {
+        margin-top: 8px;
+        background: #f7f9fd;
+        border-radius: 16px;
+        padding: 10px 14px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: .78rem;
+        font-weight: 700;
+        color: #55627e;
+        box-shadow: 0 6px 12px rgba(31, 52, 120, .04);
+    }
+
+    .week-bar .v {
+        font-size: .92rem;
+        color: var(--blue);
+        font-weight: 700;
+    }
+
+    .stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        margin: 8px 0 10px;
+    }
+
+    .stat-card {
+        background: #fff;
+        border-radius: 18px;
+        padding: 10px 10px;
+        box-shadow: var(--shadow);
+        min-height: 90px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .stat-top {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .icon-circle {
+        width: 30px;
+        height: 30px;
+        border-radius: 999px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-size: .95rem;
+        font-weight: 800;
+        flex: 0 0 auto;
+    }
+
+    .icon-green { background:#19b55b; }
+    .icon-orange { background:#f2a41c; }
+    .icon-blue { background: #2b73e8; }
+
+    .stat-label {
+        font-size: .61rem;
+        font-weight: 600;
+        color: #33415e;
+        line-height: 1.12;
+    }
+
+    .stat-value {
+        font-size: .94rem;
+        font-weight: 700;
+        color: #152647;
+        margin-top: 6px;
+    }
+
+    .edit-card, .pay-card, .cfg-card {
+        background: #fff;
+        border-radius: 18px;
+        padding: 12px;
+        box-shadow: var(--shadow);
+    }
+
+    .edit-title {
+        font-size: .94rem;
+        font-weight: 700;
+        color: #1d2c4a;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0 0 8px 0;
+    }
+
+    .title-dot {
+        width: 28px;
+        height: 28px;
+        border-radius: 999px;
+        background: var(--red);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        font-weight: 800;
+    }
+
+    .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+
+    .field label, .cfg-card label {
+        display: block;
+        font-size: .67rem;
+        font-weight: 700;
+        color: #52607d;
+        margin: 8px 0 5px;
+    }
+
+    .hint {
+        font-size: .61rem;
+        font-weight: 500;
+        color: #6c7891;
+        line-height: 1.35;
+        margin-top: 6px;
+    }
+
+    .summary-box {
+        margin-top: 10px;
+        background: #f8fbff;
+        border: 1.5px solid #e3ebf5;
+        border-radius: 14px;
+        padding: 10px;
+        font-size: .66rem;
+        font-weight: 500;
+        color: #33415e;
+        line-height: 1.4;
+    }
+
+    .overtime-row {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+
+    .check-card {
+        flex: 1;
+        background: #fff;
+        border: 1.5px solid #dce3ef;
+        border-radius: 16px;
+        padding: 10px 12px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: .74rem;
+        font-weight: 600;
+        color: #33415e;
+        box-shadow: 0 4px 10px rgba(31, 52, 120, .05);
+        cursor: pointer;
+    }
+
+    .check-box {
+        width: 24px;
+        height: 24px;
+        border-radius: 7px;
+        background: #30c56c;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: .92rem;
+        font-weight: 800;
+    }
+
+    .actions, .toolbar-row {
+        display: flex;
+        gap: 8px;
+        margin-top: 10px;
+    }
+
+    .btn, .mini-btn {
+        flex: 1;
+        border: none;
+        border-radius: 14px;
+        padding: 13px 10px;
+        color: #fff;
+        font-size: .83rem;
+        font-weight: 700;
+        cursor: pointer;
+        box-shadow: 0 8px 18px rgba(31, 52, 120, .12);
+    }
+
+    .btn.save { background: linear-gradient(180deg, #33bb59, #17964a); }
+    .btn.dup { background: linear-gradient(180deg, #3479e8, #145ed4); }
+    .mini-btn.reset { background: #8a96af; }
+    .mini-btn.delete { background: #ffefe9; color: #b7392f; }
+
+    .bottom-nav {
+        margin-top: 12px;
+        background: #fff;
+        border-radius: 22px;
+        padding: 8px 8px;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        box-shadow: var(--shadow);
+    }
+
+    .nav-item {
+        text-align: center;
+        padding: 8px 4px;
+        border-radius: 16px;
+        color: #707b94;
+        font-size: .64rem;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .nav-item .nav-icon {
+        font-size: 1.35rem;
+        display: block;
+        margin-bottom: 4px;
+    }
+
+    .nav-item.active {
+        color: #1d2c4a;
+        background: #fbfcff;
+    }
+
+    .footer {
+        text-align: center;
+        font-size: .62rem;
+        font-weight: 600;
+        color: #495572;
+        padding: 10px 8px 14px;
+    }
+
+    .footer .med { color:var(--red); }
+    .footer .laurent { color: var(--blue); }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    td {
+        padding: 9px 10px;
+        border-bottom: 1px solid #eef2f8;
+        font-size: .70rem;
+        font-weight: 600;
+        color: #33415e;
+        vertical-align: top;
+    }
+
+    td.val {
+        text-align: right;
+        font-family: ui-monospace, Menlo, monospace;
+        white-space: nowrap;
+    }
+
+    tr.total td {
+        background: #f7f9fd;
+        font-weight: 700;
+    }
+
+    .cfg-card .small {
+        font-size: .65rem;
+        font-weight: 600;
+        color: #69758d;
+        line-height: 1.45;
+        margin-top: 12px;
+    }
+
+    .tooltip {
+        position: absolute;
+        left: 20px;
+        top: 86px;
+        background: #fff;
+        border: 1.5px solid #dce3ef;
+        border-radius: 16px;
+        box-shadow: 0 16px 30px rgba(0, 0, 0, .12);
+        padding: 12px 14px;
+        max-width: 270px;
+        z-index: 4;
+        display: none;
+    }
+
+    .tooltip.visible { display: block; }
+
+    .tooltip::after {
+        content: "";
+        position: absolute;
+        bottom: -9px;
+        left: 48%;
+        width: 16px;
+        height: 16px;
+        background: #fff;
+        border-right: 1.5px solid #dce3ef;
+        border-bottom: 1.5px solid #dce3ef;
+        transform: rotate(45deg);
+    }
+
+    .tt-title {
+        font-size: .74rem;
+        font-weight: 700;
+        color: #213152;
+        margin-bottom: 7px;
+        padding-bottom: 7px;
+        border-bottom: 1.5px solid #eef2f8;
+    }
+
+    .tt-line {
+        font-size: .62rem;
+        font-weight: 500;
+        color: #31405f;
+        line-height: 1.4;
+        margin-bottom: 2px;
+    }
+
+    .tt-line strong { color: #243559; }
+    .tt-accent { color: var(--red); }
+
+    .drawer-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(12, 22, 48, .28);
+        opacity: 0;
+        pointer-events: none;
+        transition: .22s ease;
+        z-index: 40;
+    }
+
+    .drawer-overlay.visible {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .edit-card.edit-drawer {
+        display: block;
+        position: fixed;
+        left: 50%;
+        bottom: 0;
+        width: min(100%, 480px);
+        transform: translateX(-50%) translateY(105%);
+        transition: transform .24s ease;
+        z-index: 50;
+        background: #fff;
+        border: 1.5px solid #dce3ef;
+        border-bottom: none;
+        border-radius: 24px 24px 0 0;
+        padding: 12px 12px calc(12px + env(safe-area-inset-bottom));
+        box-shadow: 0 -16px 38px rgba(0, 0, 0, .18);
+        max-height: 82vh;
+        overflow-y: auto;
+    }
+
+    .edit-card.edit-drawer.visible {
+        transform: translateX(-50%) translateY(0);
+    }
+
+    .drawer-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 8px;
+    }
+
+    .drawer-close {
+        border: none;
+        background: #eef2f8;
+        color: #31405f;
+        width: 34px;
+        height: 34px;
+        border-radius: 999px;
+        font-size: 1rem;
+        font-weight: 800;
+        cursor: pointer;
+        flex: 0 0 auto;
+    }
+
+    @media (max-width: 410px) {
+        .brand { font-size: 1.9rem; }
+        .net { font-size: 1.66rem; }
+        .stats, .grid-2 { grid-template-columns: 1fr; }
+        .overtime-row, .actions, .toolbar-row { flex-direction: column; }
+        .check-card, .btn, .mini-btn { width: 100%; }
+        .day { min-height: 66px; }
+        .tooltip { max-width: 250px; }
+    }
+    </style>
+</head>
+<body>
+    <div class="app-inner-frame"></div>
+    <div class="app">
+        <div class="header">
+            <div class="brand">
+                <span class="shift">Shift</span><span class="master">MASTER</span><span class="copyright">©</span>
+            </div>
+            <div class="header-net-box">
+                <div id="net-val" class="net">0,00 €</div>
+                <div id="mealVoucherNet" class="net-sub">+ 0,00 € chèques repas nets</div>
+            </div>
+            <div class="subhead">DÉCOMPTE SD WORX — V175C</div>
+        </div>
+
+        <div class="body-content">
+            <div class="segmented">
+                <button class="seg-btn active" data-tabbtn="planning">PLANNING</button>
+                <button class="seg-btn" data-tabbtn="bulletin">BULLETIN</button>
+                <button class="seg-btn" data-tabbtn="outils">OUTILS</button>
+            </div>
+
+            <div id="planning" class="content active">
+                <div class="selectors">
+                    <select id="monthSelect"></select>
+                    <select id="yearSelect"></select>
+                </div>
+
+                <div class="calendar-wrap">
+                    <div class="weekdays">
+                        <div>LUN</div>
+                        <div>MAR</div>
+                        <div>MER</div>
+                        <div>JEU</div>
+                        <div>VEN</div>
+                        <div>SAM</div>
+                        <div>DIM</div>
+                    </div>
+                    <div id="calendarDays" class="days"></div>
+                    <div id="tooltip" class="tooltip"></div>
+                </div>
+
+                <div class="week-bar">
+                    <span>SEMAINE SÉLECTIONNÉE</span>
+                    <span id="weekTotal" class="v">0.0 h</span>
+                </div>
+
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="stat-top">
+                            <div class="icon-circle icon-green">🕒</div>
+                            <div class="stat-label">Heures<br>encodées</div>
+                        </div>
+                        <div id="statHours" class="stat-value">0.0 h</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-top">
+                            <div class="icon-circle icon-orange">≣</div>
+                            <div class="stat-label">Norme<br>mensuelle</div>
+                        </div>
+                        <div class="stat-value">165.0 h</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-top">
+                            <div class="icon-circle icon-blue">🎟️</div>
+                            <div class="stat-label">Chèques<br>repas</div>
+                        </div>
+                        <div id="statMealCount" class="stat-value">0</div>
+                    </div>
+                </div>
+
+                <div id="clickHint" class="hint">
+                    Clique sur un jour pour ouvrir l’encodage. Le survol affiche uniquement la bulle d’information.
+                </div>
+
+                <div id="drawerOverlay" class="drawer-overlay"></div>
+
+                <div id="editCard" class="edit-card edit-drawer">
+                    <div class="drawer-head">
+                        <div class="edit-title">
+                            <span class="title-dot">+</span>
+                            <span>Encodage journée</span>
+                        </div>
+                        <button id="closeDrawerBtn" class="drawer-close" type="button">✕</button>
+                    </div>
+
+                    <div class="grid-2">
+                        <div class="field">
+                            <label>Date sélectionnée</label>
+                            <input id="dateDisplay" type="text" readonly>
+                        </div>
+                        <div class="field">
+                            <label>Lieu</label>
+                            <select id="locSelect"></select>
+                        </div>
+                    </div>
+
+                    <div class="grid-2">
+                        <div class="field">
+                            <label>Shift</label>
+                            <select id="shiftSelect"></select>
+                        </div>
+                        <div class="field">
+                            <label>Jour férié / WE</label>
+                            <select id="jfSelect">
+                                <option value="auto">Auto</option>
+                                <option value="yes">Oui</option>
+                                <option value="no">Non</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid-2">
+                        <div class="field">
+                            <label>Heures base</label>
+                            <input id="baseInput" type="number" step="0.1">
+                        </div>
+                        <div class="field">
+                            <label>Heures supp</label>
+                            <input id="extInput" type="number" step="0.1" value="0">
+                        </div>
+                    </div>
+
+                    <div class="overtime-row">
+                        <div id="ext35Toggle" class="check-card">
+                            <div class="check-box" id="ext35Box">✓</div>
+                            <span>+35% Supplément Nuit / WE</span>
+                        </div>
+                    </div>
+
+                    <div class="summary-box" id="daySummary">
+                        Sélectionne un jour dans le calendrier pour encoder le lieu, le shift et les heures.
+                    </div>
+
+                    <div class="actions">
+                        <button class="btn save" id="saveBtn">💾 ENREGISTRER</button>
+                        <button class="btn dup" id="dupBtn">⧉ DUPLIQUER J+1</button>
+                    </div>
+
+                    <div class="toolbar-row">
+                        <button class="mini-btn reset" id="resetMonthBtn">RESET MONTH</button>
+                        <button class="mini-btn delete" id="deleteDayBtn">SUPPRIMER JOUR</button>
+                    </div>
+                </div>
+
+                <div class="bottom-nav">
+                    <div class="nav-item active" data-navtab="planning">
+                        <span class="nav-icon">🗓️</span>
+                        Planning
+                    </div>
+                    <div class="nav-item" data-navtab="bulletin">
+                        <span class="nav-icon">📄</span>
+                        Bulletin
+                    </div>
+                    <div class="nav-item" data-navtab="outils">
+                        <span class="nav-icon">📊</span>
+                        Outils
+                    </div>
+                    <div class="nav-item" data-navtab="outils">
+                        <span class="nav-icon">⚙️</span>
+                        Paramètres
+                    </div>
+                </div>
+
+                <div class="footer">
+                    © <span class="med">Medivalence</span> 2026 - Créé par <span class="laurent">Laurent Jaspard</span>
+                </div>
+            </div>
+
+            <div id="bulletin" class="content">
+                <div class="selectors">
+                    <select id="monthSelectPay"></select>
+                    <select id="yearSelectPay"></select>
+                </div>
+                <div class="pay-card">
+                    <table id="payTable"></table>
+                </div>
+                <div class="actions">
+                    <button class="btn dup" id="pdfBtn">📥 TÉLÉCHARGER PDF</button>
+                </div>
+            </div>
+
+            <div id="outils" class="content">
+                <div class="cfg-card">
+                    <label>Taux horaire de base</label>
+                    <input id="rateInput" type="number" step="0.0001">
+
+                    <label>Abonnement social KM</label>
+                    <input id="socInput" type="number" step="0.01">
+
+                    <label>Valeur faciale chèque-repas</label>
+                    <input id="mealFaceInput" type="number" step="0.01">
+
+                    <label>Cotisation personnelle chèque-repas</label>
+                    <input id="mealEmpInput" type="number" step="0.01">
+
+                    <div class="actions">
+                        <button class="btn save" id="cfgSaveBtn">SAUVEGARDER</button>
+                        <button class="btn dup" id="exportBtn">EXPORT JSON</button>
+                    </div>
+
+                    <input type="file" id="fileImport" style="display:none">
+                    <button class="btn" style="margin-top:12px;background:#8a96af" id="importBtn">IMPORTER JSON</button>
+
+                    <div class="small">
+                        Chèques-repas : 1 chèque par tranche complète de 7h36, sur toutes les heures encodées du mois.<br>
+                        Valeurs par défaut : 8,00 € facial et 1,12 € de cote-part personnelle.<br>
+                        Heures supp, nuit et week-end comptent aussi dans le total d’heures pour le chèque-repas.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+const MONTH_NORM = 165;
+const MEAL_VOUCHER_UNIT_HOURS = 7.6;
+
+function loadMigratedData() {
+    const v175cDb = localStorage.getItem('shiftmaster_v175c_db');
+    const v175cCfg = localStorage.getItem('shiftmaster_v175c_cfg');
+
+    if (v175cDb || v175cCfg) {
+        return {
+            db: JSON.parse(v175cDb || '[]'),
+            cfg: JSON.parse(v175cCfg || JSON.stringify({
+                rate: 16.1104,
+                soc: 86.19,
+                mealFace: 8.00,
+                mealEmp: 1.12
+            }))
+        };
+    }
+
+    const oldDb175b = localStorage.getItem('shiftmaster_v175b_db');
+    const oldCfg175b = localStorage.getItem('shiftmaster_v175b_cfg');
+    const oldDb175 = localStorage.getItem('shiftmaster_v175_db');
+    const oldCfg175 = localStorage.getItem('shiftmaster_v175_cfg');
+    const oldDb174 = localStorage.getItem('shiftmaster_v174_db');
+    const oldCfg174 = localStorage.getItem('shiftmaster_v174_cfg');
+
+    const db = JSON.parse(oldDb175b || oldDb175 || oldDb174 || '[]');
+    const cfg = JSON.parse(oldCfg175b || oldCfg175 || oldCfg174 || JSON.stringify({
+        rate: 16.1104,
+        soc: 86.19,
+        mealFace: 8.00,
+        mealEmp: 1.12
+    }));
+
+    if (cfg.mealFace == null) cfg.mealFace = 8.00;
+    if (cfg.mealEmp == null) cfg.mealEmp = 1.12;
+
+    localStorage.setItem('shiftmaster_v175c_db', JSON.stringify(db));
+    localStorage.setItem('shiftmaster_v175c_cfg', JSON.stringify(cfg));
+
+    return { db, cfg };
+}
+
+const migrated = loadMigratedData();
+let db = migrated.db;
+let cfg = migrated.cfg;
+
+let selectedDate = null;
+let ext35Checked = true;
+
+const SHIFTS = {
+    TMS: [
+        { label: "REPOS / OFF", h: 0, start: null, end: null },
+        { label: "7-15", h: 8, start: 7, end: 15 },
+        { label: "9-17", h: 8, start: 9, end: 17 },
+        { label: "8-20", h: 12, start: 8, end: 20 },
+        { label: "9-21", h: 12, start: 9, end: 21 }
+    ],
+    MED: [
+        { label: "REPOS / OFF", h: 0, start: null, end: null },
+        { label: "7-15", h: 8, start: 7, end: 15 },
+        { label: "10-18", h: 8, start: 10, end: 18 },
+        { label: "14-22", h: 8, start: 14, end: 22 },
+        { label: "22-6", h: 8, start: 22, end: 6 },
+        { label: "10-22", h: 12, start: 10, end: 22 }
+    ],
+    H112: [
+        { label: "REPOS / OFF", h: 0, start: null, end: null },
+        { label: "7-19", h: 12, start: 7, end: 19 },
+        { label: "19-7", h: 12, start: 19, end: 7 },
+        { label: "7-15", h: 8, start: 7, end: 15 },
+        { label: "15-23", h: 8, start: 15, end: 23 }
+    ]
+};
+
+const LOCATIONS = [
+    "BIR - BruCap",
+    "TMS",
+    "MED",
+    "PIT ST ANNE",
+    "PIT BRACOPS",
+    "PIT IXELLES",
+    "112 FOREST",
+    "112 ST ELISABETH",
+    "SAMU HUDERF"
+];
+
+function getDateObj(dateStr) {
+    return new Date(dateStr + "T12:00:00");
+}
+
+function toDateStr(dateObj) {
+    const y = dateObj.getFullYear();
+    const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+    const d = String(dateObj.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+}
+
+function isWeekend(dateStr) {
+    const d = getDateObj(dateStr).getDay();
+    return d === 0 || d === 6;
+}
+
+function getEasterSunday(year) {
+    const a = year % 19;
+    const b = Math.floor(year / 100);
+    const c = year % 100;
+    const d = Math.floor(b / 4);
+    const e = b % 4;
+    const f = Math.floor((b + 8) / 25);
+    const g = Math.floor((b - f + 1) / 3);
+    const h = (19 * a + b - d - g + 15) % 30;
+    const i = Math.floor(c / 4);
+    const k = c % 4;
+    const l = (32 + 2 * e + 2 * i - h - k) % 7;
+    const m = Math.floor((a + 11 * h + 22 * l) / 451);
+    const month = Math.floor((h + l - 7 * m + 114) / 31);
+    const day = ((h + l - 7 * m + 114) % 31) + 1;
+    return new Date(year, month - 1, day, 12, 0, 0, 0);
+}
+
+function addDays(dateObj, days) {
+    const d = new Date(dateObj);
+    d.setDate(d.getDate() + days);
+    d.setHours(12, 0, 0, 0);
+    return d;
+}
+
+function getBelgianHolidayMap(year) {
+    const easter = getEasterSunday(year);
+    const easterMonday = addDays(easter, 1);
+    const ascension = addDays(easter, 39);
+    const whitMonday = addDays(easter, 50);
+
+    const fixed = [
+        { date: `${year}-01-01`, name: "Jour de l’An" },
+        { date: `${year}-05-01`, name: "Fête du Travail" },
+        { date: `${year}-07-21`, name: "Fête nationale" },
+        { date: `${year}-08-15`, name: "Assomption" },
+        { date: `${year}-11-01`, name: "Toussaint" },
+        { date: `${year}-11-11`, name: "Armistice" },
+        { date: `${year}-12-25`, name: "Noël" }
+    ];
+
+    const movable = [
+        { date: toDateStr(easterMonday), name: "Lundi de Pâques" },
+        { date: toDateStr(ascension), name: "Ascension" },
+        { date: toDateStr(whitMonday), name: "Lundi de Pentecôte" }
+    ];
+
+    const map = {};
+    [...fixed, ...movable].forEach(h => { map[h.date] = h.name; });
+    return map;
+}
+
+function getBelgianHolidayName(dateStr) {
+    const year = getDateObj(dateStr).getFullYear();
+    const map = getBelgianHolidayMap(year);
+    return map[dateStr] || null;
+}
+
+function isBelgianHoliday(dateStr) {
+    return !!getBelgianHolidayName(dateStr);
+}
+
+function isSpecialDay(dateStr) {
+    return isWeekend(dateStr) || isBelgianHoliday(dateStr);
+}
+
+function formatMoney(v) {
+    return v.toLocaleString('fr-BE', {
+        style: 'currency',
+        currency: 'EUR'
+    });
+}
+
+function formatDisplayDate(dateStr) {
+    return getDateObj(dateStr).toLocaleDateString('fr-BE', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+    });
+}
+
+function getFamily(loc) {
+    if (loc === "MED") return "MED";
+    if (loc === "BIR - BruCap" || loc === "TMS") return "TMS";
+    return "H112";
+}
+
+function getLocShort(loc) {
+    return (loc || "").replace("PIT ", "").replace("112 ", "").replace(" - BruCap", "");
+}
+
+function getShiftForLocation(loc, label) {
+    const fam = getFamily(loc);
+    return SHIFTS[fam].find(s => s.label === label) || SHIFTS[fam][0];
+}
+
+function computeNightHours(start, end) {
+    if (start == null || end == null) return 0;
+    let hours = [];
+    let current = start;
+    let safety = 0;
+
+    while (safety < 24) {
+        hours.push(current % 24);
+        current++;
+        if ((current % 24) === (end % 24)) break;
+        safety++;
+    }
+
+    return hours.filter(h => h >= 20 || h < 7).length;
+}
+
+function compute35Hours(entry) {
+    const base = parseFloat(entry.hBase || 0);
+    const ext = parseFloat(entry.ext || 0);
+
+    if (entry.jf || isWeekend(entry.date)) {
+        return base + ext;
+    }
+
+    let h35 = Math.min(base, computeNightHours(entry.shiftStart, entry.shiftEnd));
+    if (entry.ext35) h35 += ext;
+    return h35;
+}
+
+function inferColor(entry) {
+    if (!entry || !entry.hTotal) return 'gray';
+    if (entry.jf || isWeekend(entry.date)) return 'red';
+    return 'green';
+}
+
+function currentMonth() {
+    return parseInt(document.getElementById('monthSelect').value, 10);
+}
+
+function currentYear() {
+    return parseInt(document.getElementById('yearSelect').value, 10);
+}
+
+function getMonthEntries(month, year) {
+    return db.filter(x => {
+        const d = getDateObj(x.date);
+        return d.getMonth() === month && d.getFullYear() === year;
+    }).sort((a, b) => a.date.localeCompare(b.date));
+}
+
+function computeMonthBreakdown(entries) {
+    let totalEncoded = 0;
+    let normalHours = 0;
+    let holidayHours = 0;
+    let h35 = 0;
+    let daysWorked = 0;
+
+    entries.forEach(e => {
+        const total = parseFloat(e.hTotal || 0);
+        if (total > 0) daysWorked++;
+        totalEncoded += total;
+
+        if (e.jf) holidayHours += total;
+        else normalHours += total;
+
+        h35 += compute35Hours(e);
+    });
+
+    return {
+        totalEncoded,
+        normalHours,
+        holidayHours,
+        h35,
+        daysWorked
+    };
+}
+
+function computeCodes(month, year) {
+    const entries = getMonthEntries(month, year);
+    const m = computeMonthBreakdown(entries);
+
+    const totalForNorm = m.totalEncoded;
+
+    let code1010 = m.normalHours;
+    let code1350 = m.holidayHours;
+    let code1018 = 0;
+    let code1050 = 0;
+
+    if (totalForNorm > MONTH_NORM) {
+        code1018 = totalForNorm - MONTH_NORM;
+    } else if (totalForNorm < MONTH_NORM) {
+        code1050 = MONTH_NORM - totalForNorm;
+    }
+
+    return {
+        ...m,
+        rawHoursForNorm: totalForNorm,
+        code1010,
+        code1350,
+        code1018,
+        code1050,
+        code1718: m.h35
+    };
+}
+
+function computeMealVoucherCount(codes) {
+    return Math.floor(codes.totalEncoded / MEAL_VOUCHER_UNIT_HOURS);
+}
+
+function buildPayroll(month, year) {
+    const rate = parseFloat(cfg.rate || 0);
+    const abonnement = parseFloat(cfg.soc || 0);
+    const mealFace = parseFloat(cfg.mealFace ?? 8);
+    const mealEmp = parseFloat(cfg.mealEmp ?? 1.12);
+
+    const codes = computeCodes(month, year);
+
+    const v1010 = codes.code1010 * rate;
+    const v1050 = codes.code1050 * rate;
+    const v1018 = codes.code1018 * rate;
+    const v1350 = codes.code1350 * rate;
+    const v1718 = codes.code1718 * rate * 0.35;
+
+    const brut = v1010 + v1050 - v1018 + v1350 + v1718;
+
+    const onss = -(brut * 0.1307);
+
+    let bonusSocial = 0;
+    const reductOnss = 132.84;
+
+    if (brut >= 2700) bonusSocial = 14.41;
+    else if (brut >= 2550) bonusSocial = 25.91;
+    else bonusSocial = 102.22;
+
+    const imposable = brut + onss + bonusSocial + reductOnss;
+    const precompte = -(imposable * 0.1615);
+    const reducImpots = 44.02;
+    const bonusFiscal = bonusSocial >= 100 ? 53.71 : (bonusSocial >= 25 ? 13.61 : 7.57);
+    const csss = -(Math.max(0, imposable - 1800) * 0.032);
+
+    const mealVoucherCount = computeMealVoucherCount(codes);
+    const trPerso = -(mealVoucherCount * mealEmp);
+    const mealVoucherNet = mealVoucherCount * (mealFace - mealEmp);
+    const mealVoucherFaceTotal = mealVoucherCount * mealFace;
+
+    const net = imposable + precompte + reducImpots + bonusFiscal + abonnement + csss + trPerso;
+
+    return {
+        codes,
+        v1010,
+        v1050,
+        v1018,
+        v1350,
+        v1718,
+        brut,
+        onss,
+        bonusSocial,
+        reductOnss,
+        imposable,
+        precompte,
+        reducImpots,
+        bonusFiscal,
+        abonnement,
+        csss,
+        trPerso,
+        net,
+        mealVoucherCount,
+        mealVoucherNet,
+        mealVoucherFaceTotal
+    };
+}
+
+function getWeekRangeFromDate(dateObj) {
+    const start = new Date(dateObj);
+    start.setDate(dateObj.getDate() - ((dateObj.getDay() + 6) % 7));
+    start.setHours(12,0,0,0);
+
+    const end = new Date(start);
+    end.setDate(start.getDate() + 6);
+    end.setHours(12,0,0,0);
+
+    return { start, end };
+}
+
+function computeWeekTotal(startDateObj, endDateObj) {
+    let sum = 0;
+    db.forEach(e => {
+        const ed = getDateObj(e.date);
+        if (ed >= startDateObj && ed <= endDateObj) {
+            sum += parseFloat(e.hTotal || 0);
+        }
+    });
+    return sum;
+}
+
+function initSelects() {
+    const months = [
+        "Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
+        "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"
+    ];
+
+    for (const id of ['monthSelect', 'monthSelectPay']) {
+        const el = document.getElementById(id);
+        el.innerHTML = months.map((m, i) => `<option value="${i}">${m}</option>`).join('');
+    }
+
+    for (const id of ['yearSelect', 'yearSelectPay']) {
+        const el = document.getElementById(id);
+        let html = '';
+        for (let y = 2025; y <= 2028; y++) {
+            html += `<option value="${y}">${y}</option>`;
+        }
+        el.innerHTML = html;
+    }
+
+    const now = new Date();
+    document.getElementById('monthSelect').value = now.getMonth();
+    document.getElementById('yearSelect').value = now.getFullYear();
+    document.getElementById('monthSelectPay').value = now.getMonth();
+    document.getElementById('yearSelectPay').value = now.getFullYear();
+
+    document.getElementById('locSelect').innerHTML = LOCATIONS.map(l => `<option value="${l}">${l}</option>`).join('');
+    document.getElementById('rateInput').value = cfg.rate;
+    document.getElementById('socInput').value = cfg.soc;
+    document.getElementById('mealFaceInput').value = cfg.mealFace ?? 8.00;
+    document.getElementById('mealEmpInput').value = cfg.mealEmp ?? 1.12;
+}
+
+function updateShiftOptions() {
+    const loc = document.getElementById('locSelect').value;
+    const fam = getFamily(loc);
+    const shiftSelect = document.getElementById('shiftSelect');
+    const currentValue = shiftSelect.value;
+
+    shiftSelect.innerHTML = SHIFTS[fam]
+        .map(s => `<option value="${s.label}">${s.label}${s.h ? ` (${s.h}h)` : ''}</option>`)
+        .join('');
+
+    if ([...shiftSelect.options].some(o => o.value === currentValue)) {
+        shiftSelect.value = currentValue;
+    }
+
+    if (!shiftSelect.value) shiftSelect.selectedIndex = 0;
+
+    const shift = getShiftForLocation(loc, shiftSelect.value);
+    document.getElementById('baseInput').value = shift.h;
+    refreshDaySummary();
+}
+
+function renderExt35() {
+    const box = document.getElementById('ext35Box');
+    box.textContent = ext35Checked ? '✓' : '';
+    box.style.background = ext35Checked ? '#30c56c' : '#d6dbe5';
+}
+
+function getSelectedJfValue(dateStr) {
+    const jfMode = document.getElementById('jfSelect').value;
+    if (jfMode === 'yes') return true;
+    if (jfMode === 'no') return false;
+    return isSpecialDay(dateStr);
+}
+
+function buildCurrentEntry() {
+    if (!selectedDate) return null;
+
+    const loc = document.getElementById('locSelect').value;
+    const shift = getShiftForLocation(loc, document.getElementById('shiftSelect').value);
+    const hBase = parseFloat(document.getElementById('baseInput').value) || 0;
+    const ext = parseFloat(document.getElementById('extInput').value) || 0;
+    const jf = getSelectedJfValue(selectedDate);
+
+    return {
+        date: selectedDate,
+        loc,
+        shiftLabel: shift.label,
+        shiftStart: shift.start,
+        shiftEnd: shift.end,
+        hBase,
+        ext,
+        ext35: ext35Checked,
+        jf,
+        hTotal: hBase + ext
+    };
+}
+
+function refreshDaySummary() {
+    const box = document.getElementById('daySummary');
+
+    if (!selectedDate) {
+        box.innerHTML = 'Sélectionne un jour dans le calendrier pour encoder le lieu, le shift et les heures.';
+        return;
+    }
+
+    const entry = buildCurrentEntry();
+    const h35 = compute35Hours(entry);
+    const holidayName = getBelgianHolidayName(selectedDate);
+    const specialText = holidayName
+        ? `Jour férié détecté automatiquement : ${holidayName}`
+        : (isWeekend(selectedDate) ? 'Week-end détecté automatiquement' : 'Jour ouvrable standard');
+
+    box.innerHTML = `
+        <strong>${formatDisplayDate(selectedDate)}</strong><br>
+        ${specialText}<br>
+        Lieu : ${entry.loc}<br>
+        Shift : ${entry.shiftLabel}<br>
+        Ligne principale estimée : ${entry.jf ? '1350 (jour férié / WE)' : '1010 (travail normal)'}<br>
+        Heures base : ${entry.hBase.toFixed(1)}h<br>
+        Heures supp : ${entry.ext.toFixed(1)}h<br>
+        Total jour : ${entry.hTotal.toFixed(1)}h<br>
+        Majoration +35% estimée : ${h35.toFixed(1)}h<br>
+        Chèques-repas : comptés uniquement au total mensuel par tranches complètes de 7h36
+    `;
+}
+
+function openDrawer() {
+    document.getElementById('editCard').classList.add('visible');
+    document.getElementById('drawerOverlay').classList.add('visible');
+}
+
+function closeDrawer() {
+    document.getElementById('editCard').classList.remove('visible');
+    document.getElementById('drawerOverlay').classList.remove('visible');
+}
+
+function selectDay(dateStr) {
+    selectedDate = dateStr;
+    const existing = db.find(x => x.date === dateStr);
+    document.getElementById('dateDisplay').value = formatDisplayDate(dateStr);
+
+    if (existing) {
+        document.getElementById('locSelect').value = existing.loc;
+        updateShiftOptions();
+        document.getElementById('shiftSelect').value = existing.shiftLabel;
+        document.getElementById('baseInput').value = parseFloat(existing.hBase || 0);
+        document.getElementById('extInput').value = parseFloat(existing.ext || 0);
+        ext35Checked = !!existing.ext35;
+
+        if (existing.jf === true && !isSpecialDay(dateStr)) {
+            document.getElementById('jfSelect').value = 'yes';
+        } else if (existing.jf === false && isSpecialDay(dateStr)) {
+            document.getElementById('jfSelect').value = 'no';
+        } else {
+            document.getElementById('jfSelect').value = 'auto';
+        }
+    } else {
+        document.getElementById('locSelect').value = 'TMS';
+        updateShiftOptions();
+        document.getElementById('shiftSelect').value = '7-15';
+        document.getElementById('baseInput').value = 8;
+        document.getElementById('extInput').value = 0;
+        document.getElementById('jfSelect').value = 'auto';
+        ext35Checked = true;
+    }
+
+    document.getElementById('clickHint').style.display = 'none';
+    renderExt35();
+    refreshDaySummary();
+    openDrawer();
+    renderCalendar();
+}
+
+function showTooltip(dateStr, anchor) {
+    const entry = db.find(x => x.date === dateStr);
+    const holidayName = getBelgianHolidayName(dateStr);
+
+    if (!entry || !entry.hTotal) {
+        if (!holidayName) return;
+        const tip = document.getElementById('tooltip');
+        tip.innerHTML = `
+            <div class="tt-title">${formatDisplayDate(dateStr)}</div>
+            <div class="tt-line"><strong>Jour férié belge :</strong> ${holidayName}</div>
+            <div class="tt-line"><strong>Statut :</strong> détecté automatiquement</div>
+            <div class="tt-line"><strong>Encodage :</strong> aucun shift enregistré</div>
+        `;
+        tip.classList.add('visible');
+
+        const wrap = document.querySelector('.calendar-wrap').getBoundingClientRect();
+        const rect = anchor.getBoundingClientRect();
+
+        let left = rect.left - wrap.left - 12;
+        let top = rect.top - wrap.top - 138;
+
+        if (top < 48) top = rect.bottom - wrap.top + 8;
+        if (left + 290 > wrap.width) left = wrap.width - 300;
+        if (left < 10) left = 10;
+
+        tip.style.left = left + 'px';
+        tip.style.top = top + 'px';
+        return;
+    }
+
+    const tip = document.getElementById('tooltip');
+    const h35 = compute35Hours(entry);
+
+    tip.innerHTML = `
+        <div class="tt-title">${formatDisplayDate(dateStr)}</div>
+        ${holidayName ? `<div class="tt-line"><strong>Jour férié belge :</strong> ${holidayName}</div>` : ''}
+        <div class="tt-line"><strong>Lieu :</strong> ${entry.loc}</div>
+        <div class="tt-line"><strong>Shift :</strong> ${entry.shiftLabel}</div>
+        <div class="tt-line"><strong>Code :</strong> ${entry.jf ? '1350' : '1010'}</div>
+        <div class="tt-line"><strong>Heures base :</strong> ${parseFloat(entry.hBase || 0).toFixed(1)}h</div>
+        <div class="tt-line"><strong>Supplément :</strong> ${parseFloat(entry.ext || 0).toFixed(1)}h</div>
+        <div class="tt-line"><strong>Total jour :</strong> ${parseFloat(entry.hTotal || 0).toFixed(1)}h</div>
+        <div class="tt-line tt-accent"><strong>Majoration +35% :</strong> ${h35.toFixed(1)}h</div>
+    `;
+
+    tip.classList.add('visible');
+
+    const wrap = document.querySelector('.calendar-wrap').getBoundingClientRect();
+    const rect = anchor.getBoundingClientRect();
+
+    let left = rect.left - wrap.left - 12;
+    let top = rect.top - wrap.top - 170;
+
+    if (top < 48) top = rect.bottom - wrap.top + 8;
+    if (left + 290 > wrap.width) left = wrap.width - 300;
+    if (left < 10) left = 10;
+
+    tip.style.left = left + 'px';
+    tip.style.top = top + 'px';
+}
+
+function hideTooltip() {
+    document.getElementById('tooltip').classList.remove('visible');
+}
+
+function renderCalendar() {
+    const month = currentMonth();
+    const year = currentYear();
+
+    document.getElementById('monthSelectPay').value = month;
+    document.getElementById('yearSelectPay').value = year;
+
+    const container = document.getElementById('calendarDays');
+    container.innerHTML = '';
+
+    const first = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0).getDate();
+    const firstIdx = (first.getDay() + 6) % 7;
+
+    let weekDates = [];
+
+    for (let i = 0; i < firstIdx; i++) {
+        const blank = document.createElement('div');
+        blank.className = 'day blank';
+        container.appendChild(blank);
+        weekDates.push(null);
+    }
+
+    for (let d = 1; d <= lastDay; d++) {
+        const ds = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+        const entry = db.find(x => x.date === ds);
+        const holidayName = getBelgianHolidayName(ds);
+        const weekend = isWeekend(ds);
+        const isHoliday = !!holidayName;
+
+        const day = document.createElement('div');
+        day.className = `day ${selectedDate === ds ? 'selected' : ''} ${isHoliday ? 'holiday' : ''}`;
+
+        const color = inferColor(entry);
+        const pillClass = color === 'red' ? 'pill-red' : color === 'gray' ? 'pill-gray' : 'pill-green';
+
+        day.innerHTML = `
+            <div class="day-num ${weekend ? 'weekend' : ''} ${isHoliday ? 'holiday-num' : ''}">${d}</div>
+            ${isHoliday ? `<div class="holiday-badge">JF</div>` : ''}
+        `;
+
+        if (entry && entry.hTotal) {
+            const total = parseFloat(entry.hTotal || 0);
+            const ext = parseFloat(entry.ext || 0);
+            const loc = getLocShort(entry.loc);
+            const shiftTxt = ext > 0
+                ? `${parseFloat(entry.hBase || 0).toFixed(0)}h+${ext}h`
+                : `${total.toFixed(total % 1 ? 1 : 0)}h`;
+
+            day.innerHTML += `
+                <div class="event-pill ${pillClass}">
+                    ${loc}<br>${shiftTxt}
+                </div>
+                <div class="event-meta ${compute35Hours(entry) > 0 ? 'meta-35' : ''}">
+                    ${entry.jf ? 'JF' : (compute35Hours(entry) > 0 ? '◔ +35%' : '')}
+                </div>
+            `;
+        } else if (isHoliday) {
+            day.innerHTML += `
+                <div class="holiday-name">
+                    ${holidayName}
+                </div>
+            `;
+        }
+
+        day.addEventListener('mouseenter', () => showTooltip(ds, day));
+        day.addEventListener('mouseleave', () => {
+            if (selectedDate !== ds) hideTooltip();
+        });
+
+        day.addEventListener('click', () => {
+            selectDay(ds);
+            showTooltip(ds, day);
+        });
+
+        container.appendChild(day);
+        weekDates.push(ds);
+
+        if (weekDates.length === 7) {
+            const existingDates = weekDates.filter(Boolean);
+            let totalWeek = 0;
+
+            existingDates.forEach(dateStr => {
+                const e = db.find(x => x.date === dateStr);
+                if (e) totalWeek += parseFloat(e.hTotal || 0);
+            });
+
+            const weekLine = document.createElement('div');
+            weekLine.className = 'week-inline-total';
+            weekLine.innerHTML = `
+                <span class="label">TOTAL SEMAINE</span>
+                <span class="value">${totalWeek.toFixed(1)} h</span>
+            `;
+            container.appendChild(weekLine);
+            weekDates = [];
+        }
+    }
+
+    if (weekDates.length > 0) {
+        while (weekDates.length < 7) {
+            const blank = document.createElement('div');
+            blank.className = 'day blank';
+            container.appendChild(blank);
+            weekDates.push(null);
+        }
+
+        const existingDates = weekDates.filter(Boolean);
+        let totalWeek = 0;
+
+        existingDates.forEach(dateStr => {
+            const e = db.find(x => x.date === dateStr);
+            if (e) totalWeek += parseFloat(e.hTotal || 0);
+        });
+
+        const weekLine = document.createElement('div');
+        weekLine.className = 'week-inline-total';
+        weekLine.innerHTML = `
+            <span class="label">TOTAL SEMAINE</span>
+            <span class="value">${totalWeek.toFixed(1)} h</span>
+        `;
+        container.appendChild(weekLine);
+    }
+
+    if (selectedDate) {
+        const sel = getDateObj(selectedDate);
+        const range = getWeekRangeFromDate(sel);
+        const sum = computeWeekTotal(range.start, range.end);
+        document.getElementById('weekTotal').textContent = `${sum.toFixed(1)} h`;
+    } else {
+        document.getElementById('weekTotal').textContent = `0.0 h`;
+    }
+}
+
+function renderStats() {
+    const p = buildPayroll(currentMonth(), currentYear());
+    document.getElementById('net-val').textContent = formatMoney(p.net);
+    document.getElementById('mealVoucherNet').textContent = `+ ${formatMoney(p.mealVoucherNet)} chèques repas nets`;
+    document.getElementById('statHours').textContent = `${p.codes.totalEncoded.toFixed(1)} h`;
+    document.getElementById('statMealCount').textContent = `${p.mealVoucherCount}`;
+}
+
+function renderPayTable() {
+    const p = buildPayroll(
+        parseInt(document.getElementById('monthSelectPay').value, 10),
+        parseInt(document.getElementById('yearSelectPay').value, 10)
+    );
+
+    document.getElementById('payTable').innerHTML = `
+        <tr><td>1010 travaillé (hors jour férié)</td><td class="val">${p.codes.code1010.toFixed(2)} h</td></tr>
+        ${p.codes.code1050 > 0 ? `<tr><td>1050 régul norme heures manquantes</td><td class="val">${p.codes.code1050.toFixed(2)} h</td></tr>` : ''}
+        ${p.codes.code1018 > 0 ? `<tr><td>1018 régul norme heures en trop</td><td class="val">-${p.codes.code1018.toFixed(2)} h</td></tr>` : ''}
+        ${p.codes.code1350 > 0 ? `<tr><td>1350 jour férié</td><td class="val">${p.codes.code1350.toFixed(2)} h</td></tr>` : ''}
+        <tr><td>1718 sursalaire week-end / jf / nuit 35%</td><td class="val">${p.codes.code1718.toFixed(2)} h</td></tr>
+
+        <tr><td>Montant 1010</td><td class="val">${p.v1010.toFixed(2)} €</td></tr>
+        ${p.codes.code1050 > 0 ? `<tr><td>Montant 1050</td><td class="val">${p.v1050.toFixed(2)} €</td></tr>` : ''}
+        ${p.codes.code1018 > 0 ? `<tr><td>Montant 1018</td><td class="val">-${p.v1018.toFixed(2)} €</td></tr>` : ''}
+        ${p.codes.code1350 > 0 ? `<tr><td>Montant 1350</td><td class="val">${p.v1350.toFixed(2)} €</td></tr>` : ''}
+        <tr><td>Montant 1718</td><td class="val">${p.v1718.toFixed(2)} €</td></tr>
+
+        <tr class="total"><td>Montant brut estimé</td><td class="val">${p.brut.toFixed(2)} €</td></tr>
+        <tr><td>2500 cotisation ONSS</td><td class="val">${p.onss.toFixed(2)} €</td></tr>
+        <tr><td>2506 bonus de travail supplémentaire</td><td class="val">${p.bonusSocial.toFixed(2)} €</td></tr>
+        <tr><td>2509 réduct. cot. ONSS personnelle</td><td class="val">${p.reductOnss.toFixed(2)} €</td></tr>
+        <tr class="total"><td>Imposable estimé</td><td class="val">${p.imposable.toFixed(2)} €</td></tr>
+        <tr><td>3500 précompte</td><td class="val">${p.precompte.toFixed(2)} €</td></tr>
+        <tr><td>3702 réduction d'impôts bonus à l'emploi</td><td class="val">${p.reducImpots.toFixed(2)} €</td></tr>
+        <tr><td>3704 bonus de travail fiscal supplémentaire</td><td class="val">${p.bonusFiscal.toFixed(2)} €</td></tr>
+        <tr><td>3011 abonnement social km</td><td class="val">${p.abonnement.toFixed(2)} €</td></tr>
+        <tr><td>3650 cotisation spéciale de sécurité sociale</td><td class="val">${p.csss.toFixed(2)} €</td></tr>
+        <tr><td>3970 chèques-repas : cotisation personnelle</td><td class="val">${p.trPerso.toFixed(2)} €</td></tr>
+        <tr class="total"><td>Salaire net estimé</td><td class="val">${p.net.toFixed(2)} €</td></tr>
+
+        <tr class="total"><td>Nombre de chèques-repas (1 / 7h36)</td><td class="val">${p.mealVoucherCount}</td></tr>
+        <tr><td>Total heures encodées prises en compte</td><td class="val">${p.codes.totalEncoded.toFixed(2)} h</td></tr>
+        <tr><td>Montant facial total chèques-repas</td><td class="val">${p.mealVoucherFaceTotal.toFixed(2)} €</td></tr>
+        <tr><td>Net chèques-repas</td><td class="val">${p.mealVoucherNet.toFixed(2)} €</td></tr>
+    `;
+}
+
+function renderAll() {
+    renderCalendar();
+    renderStats();
+    renderPayTable();
+}
+
+function openTab(tab) {
+    document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+    document.getElementById(tab).classList.add('active');
+    document.querySelectorAll('[data-tabbtn]').forEach(b => b.classList.toggle('active', b.dataset.tabbtn === tab));
+    document.querySelectorAll('[data-navtab]').forEach(b => b.classList.toggle('active', b.dataset.navtab === tab));
+}
+
+function saveSelectedDay() {
+    if (!selectedDate) {
+        alert('Sélectionne un jour.');
+        return;
+    }
+
+    const payload = buildCurrentEntry();
+    db = db.filter(x => x.date !== selectedDate);
+    if (payload.hTotal > 0) db.push(payload);
+
+    localStorage.setItem('shiftmaster_v175c_db', JSON.stringify(db));
+    renderAll();
+    hideTooltip();
+    closeDrawer();
+}
+
+function duplicateNext() {
+    if (!selectedDate) {
+        alert('Sélectionne un jour.');
+        return;
+    }
+
+    const payload = buildCurrentEntry();
+    let next = getDateObj(selectedDate);
+    next.setDate(next.getDate() + 1);
+
+    const ds = next.toISOString().split('T')[0];
+    payload.date = ds;
+    payload.jf = getSelectedJfValue(ds);
+
+    db = db.filter(x => x.date !== ds);
+    if (payload.hTotal > 0) db.push(payload);
+
+    localStorage.setItem('shiftmaster_v175c_db', JSON.stringify(db));
+    renderAll();
+}
+
+function deleteSelectedDay() {
+    if (!selectedDate) {
+        alert('Sélectionne un jour.');
+        return;
+    }
+
+    db = db.filter(x => x.date !== selectedDate);
+    localStorage.setItem('shiftmaster_v175c_db', JSON.stringify(db));
+    hideTooltip();
+    closeDrawer();
+    renderAll();
+}
+
+function resetCurrentMonth() {
+    const month = currentMonth();
+    const year = currentYear();
+    const before = db.length;
+
+    db = db.filter(x => {
+        const d = getDateObj(x.date);
+        return !(d.getMonth() === month && d.getFullYear() === year);
+    });
+
+    localStorage.setItem('shiftmaster_v175c_db', JSON.stringify(db));
+    hideTooltip();
+    closeDrawer();
+    renderAll();
+    alert(`Mois vidé. ${before - db.length} jour(s) supprimé(s).`);
+}
+
+function saveCfg() {
+    cfg.rate = parseFloat(document.getElementById('rateInput').value) || 0;
+    cfg.soc = parseFloat(document.getElementById('socInput').value) || 0;
+    cfg.mealFace = parseFloat(document.getElementById('mealFaceInput').value) || 8.00;
+    cfg.mealEmp = parseFloat(document.getElementById('mealEmpInput').value) || 1.12;
+
+    localStorage.setItem('shiftmaster_v175c_cfg', JSON.stringify(cfg));
+    renderAll();
+    alert('Configuration sauvegardée');
+}
+
+function exportData() {
+    const blob = new Blob([JSON.stringify({ db, cfg }, null, 2)], {
+        type: 'application/json'
+    });
+
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'shiftmaster_v175c.json';
+    a.click();
+}
+
+function importData(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = ev => {
+        const parsed = JSON.parse(ev.target.result);
+        db = parsed.db || parsed || [];
+        cfg = parsed.cfg || cfg;
+
+        if (cfg.mealFace == null) cfg.mealFace = 8.00;
+        if (cfg.mealEmp == null) cfg.mealEmp = 1.12;
+
+        localStorage.setItem('shiftmaster_v175c_db', JSON.stringify(db));
+        localStorage.setItem('shiftmaster_v175c_cfg', JSON.stringify(cfg));
+
+        document.getElementById('rateInput').value = cfg.rate;
+        document.getElementById('socInput').value = cfg.soc;
+        document.getElementById('mealFaceInput').value = cfg.mealFace;
+        document.getElementById('mealEmpInput').value = cfg.mealEmp;
+
+        renderAll();
+        alert('Import terminé');
+    };
+
+    reader.readAsText(file);
+}
+
+function generatePDF() {
+    const month = parseInt(document.getElementById('monthSelectPay').value, 10);
+    const year = parseInt(document.getElementById('yearSelectPay').value, 10);
+    const monthName = document.getElementById('monthSelectPay').selectedOptions[0].textContent;
+    const p = buildPayroll(month, year);
+
+    const exportBox = document.createElement('div');
+    exportBox.style.padding = '0';
+    exportBox.style.background = '#eef2f8';
+    exportBox.style.fontFamily = 'Inter, Arial, sans-serif';
+    exportBox.style.color = '#26324b';
+
+    exportBox.innerHTML = `
+        <div style="max-width:760px;margin:0 auto;background:#eef2f8;padding:18px;">
+            <div style="background:linear-gradient(180deg,#071f68 0%,#0d2268 60%,#112a78 100%);border-radius:22px;padding:20px 22px 16px;color:#fff;box-shadow:0 12px 30px rgba(24,39,75,.12);">
+                <div style="font-size:30px;font-weight:700;line-height:1;margin-bottom:12px;letter-spacing:.12px;">
+                    <span style="color:#ff4a43;">Shift</span><span style="color:#63a4ff;">MASTER</span><span style="color:#ffffff;font-size:16px;vertical-align:top;margin-left:4px;">©</span>
+                </div>
+                <div style="border:1.5px solid rgba(255,255,255,.22);border-radius:20px;padding:12px 16px;background:rgba(255,255,255,.06);">
+                    <div style="font-size:26px;font-weight:600;color:#79e06d;line-height:1.02;">${formatMoney(p.net)}</div>
+                    <div style="font-size:12px;font-weight:600;color:#dbe8ff;margin-top:6px;">+ ${formatMoney(p.mealVoucherNet)} chèques repas nets</div>
+                </div>
+                <div style="font-size:11px;font-weight:600;opacity:.9;letter-spacing:.25px;margin-top:10px;">
+                    BULLETIN ESTIMATIF — ${monthName.toUpperCase()} ${year}
+                </div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px;">
+                <div style="background:#fff;border:1.5px solid #dce3ef;border-radius:18px;padding:12px;box-shadow:0 12px 30px rgba(24,39,75,.12);">
+                    <div style="font-size:11px;font-weight:600;color:#33415e;">Heures encodées</div>
+                    <div style="font-size:20px;font-weight:700;color:#152647;margin-top:8px;">${p.codes.totalEncoded.toFixed(1)} h</div>
+                </div>
+                <div style="background:#fff;border:1.5px solid #dce3ef;border-radius:18px;padding:12px;box-shadow:0 12px 30px rgba(24,39,75,.12);">
+                    <div style="font-size:11px;font-weight:600;color:#33415e;">Norme mensuelle</div>
+                    <div style="font-size:20px;font-weight:700;color:#152647;margin-top:8px;">165.0 h</div>
+                </div>
+                <div style="background:#fff;border:1.5px solid #dce3ef;border-radius:18px;padding:12px;box-shadow:0 12px 30px rgba(24,39,75,.12);">
+                    <div style="font-size:11px;font-weight:600;color:#33415e;">Chèques repas</div>
+                    <div style="font-size:20px;font-weight:700;color:#152647;margin-top:8px;">${p.mealVoucherCount}</div>
+                </div>
+            </div>
+
+            <div style="background:#fff;border:1.5px solid #dce3ef;border-radius:18px;padding:14px;margin-top:12px;box-shadow:0 12px 30px rgba(24,39,75,.12);">
+                <div style="font-size:16px;font-weight:700;color:#1d2c4a;margin-bottom:10px;">Détail bulletin</div>
+                <table style="width:100%;border-collapse:collapse;font-size:12px;">
+                    <tr><td style="padding:9px 10px;border-bottom:1px solid #eef2f8;font-weight:600;">1010 travaillé (hors jour férié)</td><td style="padding:9px 10px;border-bottom:1px solid #eef2f8;text-align:right;font-family:Menlo,monospace;font-weight:600;">${p.codes.code1010.toFixed(2)} h</td></tr>
+                    ${p.codes.code1050 > 0 ? `<tr><td style="padding:9px 10px;border-bottom:1px solid #eef2f8;font-weight:600;">1050 régul norme heures manquantes</td><td style="padding:9px 10px;border-bottom:1px solid #eef2f8;text-align:right;font-family:Menlo,monospace;font-weight:600;">${p.codes.code1050.toFixed(2)} h</td></tr>` : ''}
+                    ${p.codes.code1018 > 0 ? `<tr><td style="padding:9px 10px;border-bottom:1px solid #eef2f8;font-weight:600;">1018 régul norme heures en trop</td><td style="padding:9px 10px;border-bottom:1px solid #eef2f8;text-align:right;font-family:Menlo,monospace;font-weight:600;">-${p.codes.code1018.toFixed(2)} h</td></tr>` : ''}
+                    ${p.codes.code1350 > 0 ? `<tr><td style="padding:9px 10px;border-bottom:1px solid #eef2f8;font-weight:600;">1350 jour férié</td><td style="padding:9px 10px;border-bottom:1px solid #eef2f8;text-align:right;font-family:Menlo,monospace;font-weight:600;">${p.codes.code1350.toFixed(2)} h</td></tr>` : ''}
+                    <tr><td style="padding:9px 10px;border-bottom:1px solid #eef2f8;font-weight:600;">1718 sursalaire week-end / jf / nuit 35%</td><td style="padding:9px 10px;border-bottom:1px solid #eef2f8;text-align:right;font-family:Menlo,monospace;font-weight:600;">${p.codes.code1718.toFixed(2)} h</td></tr>
+
+                    <tr><td style="padding:9px 10px;border-bottom:1px solid #eef2f8;font-weight:600;">Montant 1010</td><td style="padding:9px 10px;border-bottom:1px solid #eef2f8;text-align:right;font-family:Menlo,monospace;font-weight:600;">${p.v1010.toFixed(2)} €</td></tr>
+                    ${p.codes.code1050 > 0 ? `<tr><td style="padding:9px 10px;border-bottom:1px solid #eef2f8;font-weight:600;">Montant 1050</td><td style="padding:9px 10px;border-bottom:1px solid #eef2f8;text-align:right;font-family:Menlo,monospace;font-weight:600;">${p.v1050.toFixed(2)} €</td></tr>` : ''}
+                    ${p.codes.code1018 > 0 ? `<tr><td style="padding:9px 10px;border-bottom:1px solid #eef2f8;font-weight:600;">Montant 1018</td><td style="padding:9px 10px;border-bottom:1px solid #eef2f8;text-align:right;font-family:Menlo,monospace;font-weight:600;">-${p.v1018.toFixed(2)} €</td></tr>` : ''}
+                    ${p.codes.code1350 > 0 ? `<tr><td style="padding:9px 10px;border-bottom:1px solid #eef2f8;font-weight:600;">Montant 1350</td><td style="padding:9px 10px;border-bottom:1px solid #eef2f8;text-align:right;font-family:Menlo,monospace;font-weight:600;">${p.v1350.toFixed(2)} €</td></tr>` : ''}
+                    <tr><td style="padding:9px 10px;border-bottom:1px solid #eef2f8;font-weight:600;">Montant 1718</td><td style="padding:9px 10px;border-bottom:1px solid #eef2f8;text-align:right;font-family:Menlo,monospace;font-weight:600;">${p.v1718.toFixed(2)} €</td></tr>
+
+                    <tr><td style="padding:10px 10px;border-bottom:1px solid #eef2f8;background:#f7f9fd;font-weight:700;">Montant brut estimé</td><td style="padding:10px 10px;border-bottom:1px solid #eef2f8;background:#f7f9fd;text-align:right;font-family:Menlo,monospace;font-weight:700;">${p.brut.toFixed(2)} €</td></tr>
+                    <tr><td style="padding:9px 10px;border-bottom:1px solid #eef2f8;font-weight:600;">2500 cotisation ONSS</td><td style="padding:9px 10px;border-bottom:1px solid #eef2f8;text-align:right;font-family:Menlo,monospace;font-weight:600;">${p.onss.toFixed(2)} €</td></tr>
+                    <tr><td style="padding:9px 10px;border-bottom:1px solid #eef2f8;font-weight:600;">2506 bonus de travail supplémentaire</td><td style="padding:9px 10px;border-bottom:1px solid #eef2f8;text-align:right;font-family:Menlo,monospace;font-weight:600;">${p.bonusSocial.toFixed(2)} €</td></tr>
+                    <tr><td style="padding:9px 10px;border-bottom:1px solid #eef2f8;font-weight:600;">2509 réduct. cot. ONSS personnelle</td><td style="padding:9px 10px;border-bottom:1px solid #eef2f8;text-align:right;font-family:Menlo,monospace;font-weight:600;">${p.reductOnss.toFixed(2)} €</td></tr>
+                    <tr><td style="padding:10px 10px;border-bottom:1px solid #eef2f8;background:#f7f9fd;font-weight:700;">Imposable estimé</td><td style="padding:10px 10px;border-bottom:1px solid #eef2f8;background:#f7f9fd;text-align:right;font-family:Menlo,monospace;font-weight:700;">${p.imposable.toFixed(2)} €</td></tr>
+                    <tr><td style="padding:9px 10px;border-bottom:1px solid #eef2f8;font-weight:600;">3500 précompte</td><td style="padding:9px 10px;border-bottom:1px solid #eef2f8;text-align:right;font-family:Menlo,monospace;font-weight:600;">${p.precompte.toFixed(2)} €</td></tr>
+                    <tr><td style="padding:9px 10px;border-bottom:1px solid #eef2f8;font-weight:600;">3702 réduction d'impôts bonus à l'emploi</td><td style="padding:9px 10px;border-bottom:1px solid #eef2f8;text-align:right;font-family:Menlo,monospace;font-weight:600;">${p.reducImpots.toFixed(2)} €</td></tr>
+                    <tr><td style="padding:9px 10px;border-bottom:1px solid #eef2f8;font-weight:600;">3704 bonus de travail fiscal supplémentaire</td><td style="padding:9px 10px;border-bottom:1px solid #eef2f8;text-align:right;font-family:Menlo,monospace;font-weight:600;">${p.bonusFiscal.toFixed(2)} €</td></tr>
+                    <tr><td style="padding:9px 10px;border-bottom:1px solid #eef2f8;font-weight:600;">3011 abonnement social km</td><td style="padding:9px 10px;border-bottom:1px solid #eef2f8;text-align:right;font-family:Menlo,monospace;font-weight:600;">${p.abonnement.toFixed(2)} €</td></tr>
+                    <tr><td style="padding:9px 10px;border-bottom:1px solid #eef2f8;font-weight:600;">3650 cotisation spéciale de sécurité sociale</td><td style="padding:9px 10px;border-bottom:1px solid #eef2f8;text-align:right;font-family:Menlo,monospace;font-weight:600;">${p.csss.toFixed(2)} €</td></tr>
+                    <tr><td style="padding:9px 10px;border-bottom:1px solid #eef2f8;font-weight:600;">3970 chèques-repas : cotisation personnelle</td><td style="padding:9px 10px;border-bottom:1px solid #eef2f8;text-align:right;font-family:Menlo,monospace;font-weight:600;">${p.trPerso.toFixed(2)} €</td></tr>
+                    <tr><td style="padding:10px 10px;border-bottom:1px solid #eef2f8;background:#f7f9fd;font-weight:700;">Salaire net estimé</td><td style="padding:10px 10px;border-bottom:1px solid #eef2f8;background:#f7f9fd;text-align:right;font-family:Menlo,monospace;font-weight:700;">${p.net.toFixed(2)} €</td></tr>
+                </table>
+            </div>
+
+            <div style="background:#fff;border:1.5px solid #dce3ef;border-radius:18px;padding:14px;margin-top:12px;box-shadow:0 12px 30px rgba(24,39,75,.12);">
+                <div style="font-size:16px;font-weight:700;color:#1d2c4a;margin-bottom:10px;">Chèques-repas</div>
+                <table style="width:100%;border-collapse:collapse;font-size:12px;">
+                    <tr><td style="padding:9px 10px;border-bottom:1px solid #eef2f8;font-weight:600;">Nombre de chèques-repas (1 / 7h36)</td><td style="padding:9px 10px;border-bottom:1px solid #eef2f8;text-align:right;font-family:Menlo,monospace;font-weight:600;">${p.mealVoucherCount}</td></tr>
+                    <tr><td style="padding:9px 10px;border-bottom:1px solid #eef2f8;font-weight:600;">Total heures encodées prises en compte</td><td style="padding:9px 10px;border-bottom:1px solid #eef2f8;text-align:right;font-family:Menlo,monospace;font-weight:600;">${p.codes.totalEncoded.toFixed(2)} h</td></tr>
+                    <tr><td style="padding:9px 10px;border-bottom:1px solid #eef2f8;font-weight:600;">Valeur faciale totale</td><td style="padding:9px 10px;border-bottom:1px solid #eef2f8;text-align:right;font-family:Menlo,monospace;font-weight:600;">${p.mealVoucherFaceTotal.toFixed(2)} €</td></tr>
+                    <tr><td style="padding:9px 10px;border-bottom:1px solid #eef2f8;font-weight:600;">Net chèques-repas</td><td style="padding:9px 10px;border-bottom:1px solid #eef2f8;text-align:right;font-family:Menlo,monospace;font-weight:600;">${p.mealVoucherNet.toFixed(2)} €</td></tr>
+                </table>
+            </div>
+
+            <div style="text-align:center;font-size:11px;font-weight:600;color:#495572;padding:14px 8px 4px;">
+                © <span style="color:#ff4a43;">Medivalence</span> 2026 - Créé par <span style="color:#1f6fe5;">Laurent Jaspard</span>
+            </div>
+        </div>
+    `;
+
+    html2pdf().set({
+        margin: 0.25,
+        filename: `bulletin_shiftmaster_${monthName.toLowerCase()}_${year}_v175c.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, backgroundColor: '#eef2f8' },
+        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+    }).from(exportBox).save();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    initSelects();
+
+    document.querySelectorAll('[data-tabbtn]').forEach(btn => {
+        btn.addEventListener('click', () => openTab(btn.dataset.tabbtn));
+    });
+
+    document.querySelectorAll('[data-navtab]').forEach(btn => {
+        btn.addEventListener('click', () => openTab(btn.dataset.navtab));
+    });
+
+    document.getElementById('monthSelect').addEventListener('change', renderAll);
+    document.getElementById('yearSelect').addEventListener('change', renderAll);
+
+    document.getElementById('monthSelectPay').addEventListener('change', () => {
+        document.getElementById('monthSelect').value = document.getElementById('monthSelectPay').value;
+        renderAll();
+    });
+
+    document.getElementById('yearSelectPay').addEventListener('change', () => {
+        document.getElementById('yearSelect').value = document.getElementById('yearSelectPay').value;
+        renderAll();
+    });
+
+    document.getElementById('locSelect').addEventListener('change', updateShiftOptions);
+
+    document.getElementById('shiftSelect').addEventListener('change', () => {
+        const shift = getShiftForLocation(
+            document.getElementById('locSelect').value,
+            document.getElementById('shiftSelect').value
+        );
+        document.getElementById('baseInput').value = shift.h;
+        refreshDaySummary();
+    });
+
+    document.getElementById('baseInput').addEventListener('input', refreshDaySummary);
+    document.getElementById('extInput').addEventListener('input', refreshDaySummary);
+    document.getElementById('jfSelect').addEventListener('change', refreshDaySummary);
+
+    document.getElementById('ext35Toggle').addEventListener('click', () => {
+        ext35Checked = !ext35Checked;
+        renderExt35();
+        refreshDaySummary();
+    });
+
+    document.getElementById('saveBtn').addEventListener('click', saveSelectedDay);
+    document.getElementById('dupBtn').addEventListener('click', duplicateNext);
+    document.getElementById('resetMonthBtn').addEventListener('click', resetCurrentMonth);
+    document.getElementById('deleteDayBtn').addEventListener('click', deleteSelectedDay);
+    document.getElementById('cfgSaveBtn').addEventListener('click', saveCfg);
+    document.getElementById('exportBtn').addEventListener('click', exportData);
+    document.getElementById('importBtn').addEventListener('click', () => document.getElementById('fileImport').click());
+    document.getElementById('fileImport').addEventListener('change', importData);
+    document.getElementById('pdfBtn').addEventListener('click', generatePDF);
+    document.getElementById('closeDrawerBtn').addEventListener('click', closeDrawer);
+    document.getElementById('drawerOverlay').addEventListener('click', closeDrawer);
+
+    updateShiftOptions();
+    renderExt35();
+    renderAll();
+});
+</script>
+</body>
+</html>
